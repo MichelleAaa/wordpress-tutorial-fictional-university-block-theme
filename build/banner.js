@@ -157,17 +157,10 @@ function EditComponent() {
     allowedBlocks: ["ourblocktheme/genericheading", "ourblocktheme/genericbutton"]
   })));
 }
+
+// For this component we are now using banner.php for the save function. So the js save function only should save the content itself. (aka the string of text is coming from Innerblocks.Content) -- This is saved in the database for this post. So now the HTML will come from the php file and only the text content is saved to the database for each post this is added to.
 function SaveComponent() {
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "page-banner"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "page-banner__bg-image",
-    style: {
-      backgroundImage: "url('/wp-content/themes/fictional-block-theme/images/library-hero.jpg')"
-    }
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "page-banner__content container t-center c-white"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks.Content, null)));
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InnerBlocks.Content, null);
 }
 })();
 

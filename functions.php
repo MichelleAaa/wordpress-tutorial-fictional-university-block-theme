@@ -191,21 +191,59 @@ function makeNotePrivate($data, $postarr) {
 // add_action('init', 'bannerBlock');
 
 
+//This is a simple class method, without using the php render for banner.php:
+// class JSXBlock {
+//   function __construct($name) {
+//     $this->name = $name;
+//     add_action('init', [$this, 'onInit']);
+//   }
+
+//   function onInit() {
+//     wp_register_script($this->name, get_stylesheet_directory_uri() . "/build/{$this->name}.js", array('wp-blocks', 'wp-editor'));
+//     register_block_type("ourblocktheme/{$this->name}", array(
+//       'editor_script' => $this->name
+//     ));
+//   }
+// }
+
+// // Our block names and file names are the same:
+// new JSXBlock('banner');
+// new JSXBlock('genericheading');
+// new JSXBlock('genericbutton');
+
+//New Method, since we now allowing some blocks to have a .php file (php render callback instead of just the js save function's generated string value that gets saved into the db) of files for our blocks:
+
 class JSXBlock {
-  function __construct($name) {
+  function __construct($name, $renderCallback = null) {
     $this->name = $name;
+    $this->renderCallback = $renderCallback;
     add_action('init', [$this, 'onInit']);
+  }
+
+  // We are passing in $attributes from the registerBlockType's attributes section. $content could be nested blocks inside of the block.
+  function ourRenderCallback($attributes, $content) {
+    ob_start(); 
+    require get_theme_file_path("/our-blocks/{$this->name}.php");
+    return ob_get_clean(); 
   }
 
   function onInit() {
     wp_register_script($this->name, get_stylesheet_directory_uri() . "/build/{$this->name}.js", array('wp-blocks', 'wp-editor'));
-    register_block_type("ourblocktheme/{$this->name}", array(
+    
+    $ourArgs = array(
       'editor_script' => $this->name
-    ));
+    );
+
+    // If renderCallback is true we are adding a property on the array called render_callback -- It must be that name. It's set as a function we created above.
+    if ($this->renderCallback) {
+      $ourArgs['render_callback'] = [$this, 'ourRenderCallback'];
+    }
+
+    register_block_type("ourblocktheme/{$this->name}", $ourArgs);
   }
 }
 
-// Our block names and file names are the same:
-new JSXBlock('banner');
+// True as the second parameter means we want to use a php render callback.
+new JSXBlock('banner', true);
 new JSXBlock('genericheading');
 new JSXBlock('genericbutton');

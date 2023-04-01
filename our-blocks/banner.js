@@ -38,13 +38,7 @@ function EditComponent() {
   )
 }
 
+// For this component we are now using banner.php for the save function. So the js save function only should save the content itself. (aka the string of text is coming from Innerblocks.Content) -- This is saved in the database for this post. So now the HTML will come from the php file and only the text content is saved to the database for each post this is added to.
 function SaveComponent() {
-  return (
-    <div className="page-banner">
-      <div className="page-banner__bg-image" style={{ backgroundImage: "url('/wp-content/themes/fictional-block-theme/images/library-hero.jpg')" }}></div>
-      <div className="page-banner__content container t-center c-white">
-        <InnerBlocks.Content />
-      </div>
-    </div>
-  )
+  return <InnerBlocks.Content />
 }
