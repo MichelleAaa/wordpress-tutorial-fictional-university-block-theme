@@ -214,8 +214,9 @@ function makeNotePrivate($data, $postarr) {
 //New Method, since we now allowing some blocks to have a .php file (php render callback instead of just the js save function's generated string value that gets saved into the db) of files for our blocks:
 
 class JSXBlock {
-  function __construct($name, $renderCallback = null) {
+  function __construct($name, $renderCallback = null, $data = null) {
     $this->name = $name;
+    $this->data = $data;
     $this->renderCallback = $renderCallback;
     add_action('init', [$this, 'onInit']);
   }
@@ -230,6 +231,15 @@ class JSXBlock {
   function onInit() {
     wp_register_script($this->name, get_stylesheet_directory_uri() . "/build/{$this->name}.js", array('wp-blocks', 'wp-editor'));
     
+    // wp_localize_script converts data from php to JS. -- wp_localize_script must be after wp_register_script.
+    // First parameter is the script we are hooking onto.
+    //Second argument is a made-up name for the js variable that will be output.
+    //Third value is the data that you want to output.
+    //Where you can find this date - in the post editor in the browser - right click - view page source - search for fallbackimage (what we named our property) -- you will see that the url we included in data is showing. -- now we can use this value in our client-side JavaScript.
+    if ($this->data) {
+      wp_localize_script($this->name, $this->name, $this->data);
+    }
+
     $ourArgs = array(
       'editor_script' => $this->name
     );
@@ -244,6 +254,7 @@ class JSXBlock {
 }
 
 // True as the second parameter means we want to use a php render callback.
-new JSXBlock('banner', true);
+// Third parameter is a fall-back image. The reason we are adding this here is becuase in JS it's not so easy to get to the root directory. (In some cases the client could install wp in a sub-folder on their domain.)
+new JSXBlock('banner', true, ['fallbackimage' => get_theme_file_uri('/images/library-hero.jpg')]);
 new JSXBlock('genericheading');
 new JSXBlock('genericbutton');
