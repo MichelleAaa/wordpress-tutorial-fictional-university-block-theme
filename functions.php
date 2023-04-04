@@ -258,3 +258,36 @@ class JSXBlock {
 new JSXBlock('banner', true, ['fallbackimage' => get_theme_file_uri('/images/library-hero.jpg')]);
 new JSXBlock('genericheading');
 new JSXBlock('genericbutton');
+new JSXBlock('slideshow', true);
+new JSXBlock('slide', true, ['themeimagepath' => get_theme_file_uri('/images/')]);
+//Sometimes wp isn't installed at the root of the domain, so we need a way to get the path to the wp root and then to the images folder.
+
+// Class made specifically for the eventsandblogs block. (That block doesn't use JSX, it uses createElement, so it's a bit different than the above ones.)
+class PlaceholderBlock {
+  function __construct($name) {
+    $this->name = $name;
+    add_action('init', [$this, 'onInit']);
+  }
+
+  function ourRenderCallback($attributes, $content) {
+    ob_start();
+    require get_theme_file_path("/our-blocks/{$this->name}.php");
+    return ob_get_clean();
+  }
+
+  function onInit() {
+    wp_register_script($this->name, get_stylesheet_directory_uri() . "/our-blocks/{$this->name}.js", array('wp-blocks', 'wp-editor'));
+    
+    register_block_type("ourblocktheme/{$this->name}", array(
+      'editor_script' => $this->name,
+      'render_callback' => [$this, 'ourRenderCallback']
+    ));
+  }
+}
+
+new PlaceholderBlock("eventsandblogs");
+new PlaceholderBlock("header");
+new PlaceholderBlock("footer");
+new PlaceholderBlock("singlepost");
+new PlaceholderBlock("page");
+new PlaceholderBlock("blogindex");
