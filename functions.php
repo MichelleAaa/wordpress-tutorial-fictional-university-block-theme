@@ -291,3 +291,37 @@ new PlaceholderBlock("footer");
 new PlaceholderBlock("singlepost");
 new PlaceholderBlock("page");
 new PlaceholderBlock("blogindex");
+new PlaceholderBlock("programarchive");
+new PlaceholderBlock("singleprogram");
+new PlaceholderBlock("singleprofessor");
+new PlaceholderBlock("mynotes");
+new PlaceholderBlock("archivecampus");
+new PlaceholderBlock("archiveevent");
+new PlaceholderBlock("archive");
+new PlaceholderBlock("pastevents");
+new PlaceholderBlock("search");
+new PlaceholderBlock("searchresults");
+new PlaceholderBlock("singlecampus");
+new PlaceholderBlock("singleevent");
+
+
+function myallowedblocks($allowed_block_types, $editor_context) {
+
+  // If you only wanted a custom restriction for the professor post type:
+    if ( $editor_context->post->post_type == "professor"){
+      return array('ourblocktheme/header', 'ourblocktheme/footer', 'core/paragraph', 'core/list', 'core/heading');
+    }
+
+  // If you are on a page/post editor screen, then we are allowing all block types:
+  if (!empty($editor_context->post)) {
+    return $allowed_block_types;
+  }
+
+  // if you are on the FSE screen, then we are restricting to only allow these block types:
+  return array('ourblocktheme/header', 'ourblocktheme/footer');
+}
+
+// Uncomment the line below if you actually want to restrict which block types are allowed
+  // 1 - name of a wp-filter hook that we want to hook onto, 2- a function we make up, 3 - priority, 4 - how many arguments the function will use.
+
+//add_filter('allowed_block_types_all', 'myallowedblocks', 10, 2);
